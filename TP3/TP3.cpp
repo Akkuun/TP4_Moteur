@@ -109,6 +109,10 @@ float tiltAngle = glm::radians(23.0f);
 SceneManager sceneManager;
 
 
+//Objet principal
+// NODES
+Node_3D SUN;
+
 
 /*******************************************************************************/
 
@@ -175,31 +179,11 @@ int main( void )
     GLuint programID = LoadShaders( "vertex_shader.glsl", "fragment_shader.glsl" );
 
 
-    // NODES
-    Node_3D SUN;
+
     //geometry of sun
     createSphere(SUN.indices, SUN.indexed_vertices, SUN.indexed_uv);
     SUN.setCouleur(glm::vec3(0, 0, 1));
-
     SUN.textureID = loadBMP_custom("data/sun.bmp");
-
-    Node_3D EARTH;
-    createSphere(EARTH.indices, EARTH.indexed_vertices, EARTH.indexed_uv);
-    EARTH.setParent(&SUN);
-    EARTH.transform.setPosition(glm::vec3(1, 0, 0));
-    EARTH.transform.scaleTransform(glm::vec3(-0.2, -0.2, -0.2));
-    EARTH.textureID = loadBMP_custom("data/earth.bmp");
-
-    Node_3D MOON;
-    createSphere(MOON.indices, MOON.indexed_vertices, MOON.indexed_uv);
-    MOON.setParent(&EARTH);
-    MOON.transform.translate(glm::vec3(5, 0, 0));
-    MOON.textureID = loadBMP_custom("data/moon.bmp");
-    MOON.transform.scaleTransform(glm::vec3(-0.5, -0.5, -0.5));
-
-    //add all item
-    sceneManager.add(&MOON);
-    sceneManager.add(&EARTH);
     sceneManager.add(&SUN);
 
 
@@ -209,12 +193,12 @@ int main( void )
 
     //UPDATE LOOP
     do{
-
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         timeCst += deltaTime;
         processInput(window);
+
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Use our shader
@@ -230,46 +214,8 @@ int main( void )
         GLuint position = glGetUniformLocation(programID, "modele");
         glUniformMatrix4fv(position, 1, GL_FALSE, glm::value_ptr(modele));
 
-        float time = (float)glfwGetTime();
-
-        // EARTH around the sun
-        float EARTHrotation = time * orbitalSpeedEarthSun;
-        float distanceTerreSoleil = 5.0f; 
-        float EARTHPosX = orbitRadius * cos(EARTHrotation) * distanceTerreSoleil;
-        float EARTHPosY = orbitRadius * sin(EARTHrotation) * distanceTerreSoleil;
-
-        
-        // Earth position offseting the sun
-        EARTH.transform.setPosition(glm::vec3(EARTHPosX, EARTHPosY, 0.0f));
-
-        // earth rotation
-        EARTH.transform.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-        float inclinationAngle = glm::radians(23.0f);
-        EARTH.transform.rotateTransform(inclinationAngle, glm::vec3(1.0f, 0.0f, 0.0f));
-        EARTH.transform.rotateTransform(time, glm::vec3(0.0f, 0.0f, 1.0f));
-
-
-        //MOON
-        float luneOrbiteAngle = time * orbitalSpeedMoonEarth; // Angle de l'orbite de la Terre (en radians)
-        float distanceLuneTerre = 2.0f; 
-        float lunePosX = lunarOrbitRadius * cos(luneOrbiteAngle) * distanceLuneTerre;
-        float lunePosY = lunarOrbitRadius * sin(luneOrbiteAngle) * distanceLuneTerre;
-        MOON.transform.setPosition(glm::vec3(lunePosX, lunePosY, 0.0f));
-        
-        // MOON ROTAION
-        MOON.transform.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-        MOON.transform.rotateTransform(time, glm::vec3(0.0f, 1.0f, 0.0f));
-       
-        // MOON ROTATION AROUND EARTH
-        float lunarOrbitAngle = glfwGetTime() * orbitalSpeedMoonEarth;
-        glm::vec3 orbitPositionLune(sin(lunarOrbitAngle) * lunarOrbitRadius, 0.0f, cos(lunarOrbitAngle) * lunarOrbitRadius);
-        glm::vec3 absolutePositionLune = EARTH.transform.getPosition() + orbitPositionLune;
-        MOON.transform.setPosition(absolutePositionLune);
-
-
-        //draw all elements
+        //draw the sun
         sceneManager.drawScene(programID);
-
 
         // Swap buffers
         glfwSwapBuffers(window);
@@ -291,69 +237,26 @@ int main( void )
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
-{
-
-
+void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    //Camera zoom in and out
-    float cameraSpeed = 2.5 * deltaTime;
+    float moveSpeed = 2.5f * deltaTime;
 
- 
-    // zoom in
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-       
-        camera_position += cameraSpeed * camera_target;
-    }
-    // zoom out
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-         
-        camera_position -= cameraSpeed * camera_target;
-    }
-
-    // Droite
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        glm::vec3 rightVector = glm::normalize(glm::cross(camera_up, camera_target));
-        camera_position += cameraSpeed * rightVector;
-    }
-
-    // Gauche
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        glm::vec3 leftVector = -glm::normalize(glm::cross(camera_up, camera_target));
-        camera_position += cameraSpeed * leftVector;
-    }
-
-    // Haut
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera_position.y -= cameraSpeed * camera_up.y;
-
-    }
-
-    // Bas
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera_position.y += cameraSpeed * camera_up.y;
-        
-    }
-
-     //Wireframe mode
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        GLint polygonMode[2];
-        glGetIntegerv(GL_POLYGON_MODE, polygonMode);
-        if(polygonMode[0] != GL_LINE)
-            glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-    } else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        GLint polygonMode[2];
-        glGetIntegerv(GL_POLYGON_MODE, polygonMode);
-        if(polygonMode[0] != GL_FILL)
-            glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-    }
-    
-
-
+    // Move SUN
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        SUN.transform.translate(glm::vec3(0.0f, moveSpeed, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        SUN.transform.translate(glm::vec3(0.0f, -moveSpeed, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        SUN.transform.translate(glm::vec3(-moveSpeed, 0.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        SUN.transform.translate(glm::vec3(moveSpeed, 0.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        SUN.transform.translate(glm::vec3(0.0f, 0.0f, moveSpeed));
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        SUN.transform.translate(glm::vec3(0.0f, 0.0f, -moveSpeed));
 }
-
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
