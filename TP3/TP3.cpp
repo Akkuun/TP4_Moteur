@@ -28,6 +28,10 @@ using namespace glm;
 #include <common/Transform.hpp>
 #include <common/SceneManager.hpp>
 
+
+
+
+
 //fonction that create a sphere
 void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &indexed_vertices, std::vector<glm::vec2> &indexed_uv){
     int nX = 40;
@@ -72,28 +76,40 @@ void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &
 }
 
 
-
 void createRectangle(std::vector<unsigned short> &indices, std::vector<glm::vec3> &indexed_vertices, std::vector<glm::vec2> &indexed_uv) {
-    // Define vertices for a rectangle
-    indexed_vertices = {
-            glm::vec3(-5.0f, 0.0f, -5.0f),
-            glm::vec3(5.0f, 0.0f, -5.0f),
-            glm::vec3(5.0f, 0.0f, 5.0f),
-            glm::vec3(-5.0f, 0.0f, 5.0f)
-    };
+    int width = 10;
+    int height = 10;
+    float maxHeight = 1.0f;
 
-    // Define UV coordinates
-    indexed_uv = {
-            glm::vec2(0.0f, 0.0f),
-            glm::vec2(1.0f, 0.0f),
-            glm::vec2(1.0f, 1.0f),
-            glm::vec2(0.0f, 1.0f)
-    };
+    // Generate vertices with random heights
+    for (int i = 0; i <= width; ++i) {
+        for (int j = 0; j <= height; ++j) {
+            float x = static_cast<float>(i) - width / 2.0f;
+            float z = static_cast<float>(j) - height / 2.0f;
+            float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * maxHeight;
+            indexed_vertices.push_back(glm::vec3(x, y, z));
+            indexed_uv.push_back(glm::vec2(static_cast<float>(i) / width, static_cast<float>(j) / height));
+        }
+    }
 
-    // Define indices for two triangles
-    indices = { 0, 1, 2, 2, 3, 0 };
+    // Generate indices for the triangles
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            int topLeft = i * (height + 1) + j;
+            int topRight = topLeft + 1;
+            int bottomLeft = topLeft + (height + 1);
+            int bottomRight = bottomLeft + 1;
+
+            indices.push_back(topLeft);
+            indices.push_back(bottomLeft);
+            indices.push_back(topRight);
+
+            indices.push_back(topRight);
+            indices.push_back(bottomLeft);
+            indices.push_back(bottomRight);
+        }
+    }
 }
-
 
 void processInput(GLFWwindow *window);
 
@@ -139,8 +155,73 @@ Node_3D SUN;
 Node_3D TERRAIN;
 
 
+// Global variables for mouse control
+float lastX = 1024.0f / 2.0;
+float lastY = 768.0f / 2.0;
+float yaw = -90.0f; // Yaw is initialized to -90.0 degrees to look along the z-axis
+float pitch = 0.0f;
+bool firstMouse = true;
+
+
 /*******************************************************************************/
 
+
+// Fonction pour vérifier si un point est dans un triangle en utilisant la méthode de Möller-Trumbore
+bool isPointInTriangle(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c) {
+    glm::vec3 v0 = c - a;
+    glm::vec3 v1 = b - a;
+    glm::vec3 v2 = p - a;
+
+    float dot00 = glm::dot(v0, v0);
+    float dot01 = glm::dot(v0, v1);
+    float dot02 = glm::dot(v0, v2);
+    float dot11 = glm::dot(v1, v1);
+    float dot12 = glm::dot(v1, v2);
+
+    float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+    return (u >= 0) && (v >= 0) && (u + v < 1);
+}
+
+// Fonction pour obtenir la hauteur du terrain à un point donné
+float getTerrainHeight(glm::vec3 point, Node_3D& terrain) {
+    for (size_t i = 0; i < terrain.indices.size(); i += 3) {
+        glm::vec3 a = terrain.indexed_vertices[terrain.indices[i]];
+        glm::vec3 b = terrain.indexed_vertices[terrain.indices[i + 1]];
+        glm::vec3 c = terrain.indexed_vertices[terrain.indices[i + 2]];
+
+        if (isPointInTriangle(point, a, b, c)) {
+            // Interpolation barycentrique
+            glm::vec3 v0 = b - a;
+            glm::vec3 v1 = c - a;
+            glm::vec3 v2 = point - a;
+
+            float d00 = glm::dot(v0, v0);
+            float d01 = glm::dot(v0, v1);
+            float d11 = glm::dot(v1, v1);
+            float d20 = glm::dot(v2, v0);
+            float d21 = glm::dot(v2, v1);
+
+            float denom = d00 * d11 - d01 * d01;
+            float v = (d11 * d20 - d01 * d21) / denom;
+            float w = (d00 * d21 - d01 * d20) / denom;
+            float u = 1.0f - v - w;
+
+            return u * a.y + v * b.y + w * c.y;
+        }
+    }
+    return 0.0f; // Default height if not found
+}
+
+// Fonction pour mettre à jour la position de l'objet
+void updateObjectPosition(Node_3D& object, Node_3D& terrain, float offset) {
+    glm::vec3 position = object.getTransform().getPosition();
+    float terrainHeight = getTerrainHeight(position, terrain);
+    position.y = terrainHeight + offset;
+    object.transform.setPosition(position);
+}
 
 int main( void )
 {
@@ -208,6 +289,8 @@ int main( void )
     //geometry of sun
     createSphere(SUN.indices, SUN.indexed_vertices, SUN.indexed_uv);
     SUN.setCouleur(glm::vec3(0, 0, 1));
+    //translate the sun to the top
+    SUN.transform.translate(glm::vec3(0.0f, 0.0f, 1.0f));
     SUN.textureID = loadBMP_custom("data/sun.bmp");
     sceneManager.add(&SUN);
 
@@ -229,12 +312,15 @@ int main( void )
     int nbFrames = 0;
 
     //UPDATE LOOP
-    do{
+    do {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         timeCst += deltaTime;
         processInput(window);
+
+        // Mettre à jour la position de l'objet
+        updateObjectPosition(SUN, TERRAIN, 1.0f); // 0.5f est l'offset au-dessus du terrain
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -258,9 +344,8 @@ int main( void )
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-    } // Check if the ESC key was pressed or the window was closed
-    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0 );
+    } while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
+             glfwWindowShouldClose(window) == 0 );
 
     glDeleteProgram(programID);
     glDeleteVertexArrays(1, &VertexArrayID);
@@ -279,6 +364,7 @@ void processInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
 
     float moveSpeed = 2.5f * deltaTime;
+    float rotationSpeed = 50.0f * deltaTime; // Rotation speed in degrees per second
 
     // Move SUN
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -293,6 +379,21 @@ void processInput(GLFWwindow *window) {
         SUN.transform.translate(glm::vec3(0.0f, 0.0f, moveSpeed));
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         SUN.transform.translate(glm::vec3(0.0f, 0.0f, -moveSpeed));
+
+
+  // Move camera freely
+if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    camera_position += moveSpeed * camera_target;
+if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    camera_position -= moveSpeed * camera_target;
+if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    camera_position -= glm::normalize(glm::cross(camera_target, camera_up)) * moveSpeed;
+if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    camera_position += glm::normalize(glm::cross(camera_target, camera_up)) * moveSpeed;
+if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    camera_position += moveSpeed * camera_up;
+if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    camera_position -= moveSpeed * camera_up;
 }
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
