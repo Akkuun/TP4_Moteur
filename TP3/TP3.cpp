@@ -71,6 +71,30 @@ void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &
     }  
 }
 
+
+
+void createRectangle(std::vector<unsigned short> &indices, std::vector<glm::vec3> &indexed_vertices, std::vector<glm::vec2> &indexed_uv) {
+    // Define vertices for a rectangle
+    indexed_vertices = {
+            glm::vec3(-5.0f, 0.0f, -5.0f),
+            glm::vec3(5.0f, 0.0f, -5.0f),
+            glm::vec3(5.0f, 0.0f, 5.0f),
+            glm::vec3(-5.0f, 0.0f, 5.0f)
+    };
+
+    // Define UV coordinates
+    indexed_uv = {
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f)
+    };
+
+    // Define indices for two triangles
+    indices = { 0, 1, 2, 2, 3, 0 };
+}
+
+
 void processInput(GLFWwindow *window);
 
 // settings
@@ -112,6 +136,7 @@ SceneManager sceneManager;
 //Objet principal
 // NODES
 Node_3D SUN;
+Node_3D TERRAIN;
 
 
 /*******************************************************************************/
@@ -185,6 +210,18 @@ int main( void )
     SUN.setCouleur(glm::vec3(0, 0, 1));
     SUN.textureID = loadBMP_custom("data/sun.bmp");
     sceneManager.add(&SUN);
+
+    //geometry of terrain
+    createRectangle(TERRAIN.indices, TERRAIN.indexed_vertices, TERRAIN.indexed_uv);
+    TERRAIN.setCouleur(glm::vec3(0.3f, 0.8f, 0.3f)); // Green color for terrain
+    //rotate the terrain to 90°
+    TERRAIN.transform.rotateTransform(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    //scale the terrain
+    TERRAIN.transform.scaleTransform(glm::vec3(2.0f, 1.0f, 1.0f));
+    //translate the terrain to the bottom
+    TERRAIN.transform.translate(glm::vec3(0.0f, 0.0f, -1.0f));
+    TERRAIN.textureID = loadBMP_custom("data/grass.bmp");
+    sceneManager.add(&TERRAIN);
 
 
     sceneManager.initScene(programID);
@@ -265,6 +302,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
 
 
