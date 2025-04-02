@@ -219,7 +219,7 @@ float getTerrainHeight(glm::vec3 point, Node_3D& terrain) {
 void updateObjectPosition(Node_3D& object, Node_3D& terrain, float offset) {
     glm::vec3 position = object.getTransform().getPosition();
     float terrainHeight = getTerrainHeight(position, terrain);
-    position.y = terrainHeight + offset;
+    position.z = terrainHeight + offset;
     object.transform.setPosition(position);
 }
 
@@ -320,7 +320,7 @@ int main( void )
         processInput(window);
 
         // Mettre à jour la position de l'objet
-        updateObjectPosition(SUN, TERRAIN, 1.0f); // 0.5f est l'offset au-dessus du terrain
+        updateObjectPosition(SUN, TERRAIN, 0.01f); // 0.5f est l'offset au-dessus du terrain
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
