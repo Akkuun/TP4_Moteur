@@ -153,6 +153,20 @@ CMakeFiles/TP3.dir/common/vboindexer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP3.dir/common/vboindexer.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/vboindexer.cpp -o CMakeFiles/TP3.dir/common/vboindexer.cpp.s
 
+CMakeFiles/TP3.dir/common/Sphere.cpp.o: CMakeFiles/TP3.dir/flags.make
+CMakeFiles/TP3.dir/common/Sphere.cpp.o: ../common/Sphere.cpp
+CMakeFiles/TP3.dir/common/Sphere.cpp.o: CMakeFiles/TP3.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/TP3.dir/common/Sphere.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TP3.dir/common/Sphere.cpp.o -MF CMakeFiles/TP3.dir/common/Sphere.cpp.o.d -o CMakeFiles/TP3.dir/common/Sphere.cpp.o -c /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/Sphere.cpp
+
+CMakeFiles/TP3.dir/common/Sphere.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP3.dir/common/Sphere.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/Sphere.cpp > CMakeFiles/TP3.dir/common/Sphere.cpp.i
+
+CMakeFiles/TP3.dir/common/Sphere.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP3.dir/common/Sphere.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/Sphere.cpp -o CMakeFiles/TP3.dir/common/Sphere.cpp.s
+
 # Object files for target TP3
 TP3_OBJECTS = \
 "CMakeFiles/TP3.dir/TP3/TP3.cpp.o" \
@@ -160,7 +174,8 @@ TP3_OBJECTS = \
 "CMakeFiles/TP3.dir/common/controls.cpp.o" \
 "CMakeFiles/TP3.dir/common/texture.cpp.o" \
 "CMakeFiles/TP3.dir/common/objloader.cpp.o" \
-"CMakeFiles/TP3.dir/common/vboindexer.cpp.o"
+"CMakeFiles/TP3.dir/common/vboindexer.cpp.o" \
+"CMakeFiles/TP3.dir/common/Sphere.cpp.o"
 
 # External object files for target TP3
 TP3_EXTERNAL_OBJECTS =
@@ -171,6 +186,7 @@ TP3: CMakeFiles/TP3.dir/common/controls.cpp.o
 TP3: CMakeFiles/TP3.dir/common/texture.cpp.o
 TP3: CMakeFiles/TP3.dir/common/objloader.cpp.o
 TP3: CMakeFiles/TP3.dir/common/vboindexer.cpp.o
+TP3: CMakeFiles/TP3.dir/common/Sphere.cpp.o
 TP3: CMakeFiles/TP3.dir/build.make
 TP3: /usr/lib/x86_64-linux-gnu/libGL.so
 TP3: /usr/lib/x86_64-linux-gnu/libGLU.so
@@ -191,7 +207,7 @@ TP3: /usr/lib/x86_64-linux-gnu/libXcursor.so
 TP3: /usr/lib/x86_64-linux-gnu/libGL.so
 TP3: /usr/lib/x86_64-linux-gnu/libGLU.so
 TP3: CMakeFiles/TP3.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable TP3"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable TP3"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TP3.dir/link.txt --verbose=$(VERBOSE)
 	/usr/bin/cmake -E copy /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/build/./TP3 /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/TP3/
 

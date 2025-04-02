@@ -152,9 +152,10 @@ CMakeFiles/TP3.dir/common/Sphere.cpp.o: \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glfw-3.1.2/include/GLFW/glfw3.h \
- /usr/include/GL/gl.h /usr/include/GL/glext.h \
- /usr/include/KHR/khrplatform.h \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glew-1.13.0/include/GL/glew.h \
+ /usr/include/GL/glu.h /usr/include/GL/gl.h \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/./common/shader.hpp \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/./common/objloader.hpp \
  /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/glm.hpp \
  /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/detail/_fixes.hpp \
  /usr/include/c++/11/cmath /usr/include/math.h \
@@ -272,4 +273,11 @@ CMakeFiles/TP3.dir/common/Sphere.cpp.o: \
  /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/../gtc/constants.hpp \
  /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/../gtc/constants.inl \
  /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/matrix_transform.inl \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/type_ptr.hpp \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/../gtc/quaternion.hpp \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/../gtc/quaternion.inl \
+ /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glm-0.9.7.1/glm/gtc/type_ptr.inl \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/./common/vboindexer.hpp \
+ /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/external/glfw-3.1.2/include/GLFW/glfw3.h \
  /home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/Sphere.hpp

@@ -536,6 +536,30 @@ TP3/TP3.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TP3.dir/build.make CMakeFiles/TP3.dir/TP3/TP3.cpp.s
 .PHONY : TP3/TP3.cpp.s
 
+common/Sphere.o: common/Sphere.cpp.o
+.PHONY : common/Sphere.o
+
+# target to build an object file
+common/Sphere.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TP3.dir/build.make CMakeFiles/TP3.dir/common/Sphere.cpp.o
+.PHONY : common/Sphere.cpp.o
+
+common/Sphere.i: common/Sphere.cpp.i
+.PHONY : common/Sphere.i
+
+# target to preprocess a source file
+common/Sphere.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TP3.dir/build.make CMakeFiles/TP3.dir/common/Sphere.cpp.i
+.PHONY : common/Sphere.cpp.i
+
+common/Sphere.s: common/Sphere.cpp.s
+.PHONY : common/Sphere.s
+
+# target to generate assembly for a file
+common/Sphere.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TP3.dir/build.make CMakeFiles/TP3.dir/common/Sphere.cpp.s
+.PHONY : common/Sphere.cpp.s
+
 common/controls.o: common/controls.cpp.o
 .PHONY : common/controls.o
 
@@ -698,6 +722,9 @@ help:
 	@echo "... TP3/TP3.o"
 	@echo "... TP3/TP3.i"
 	@echo "... TP3/TP3.s"
+	@echo "... common/Sphere.o"
+	@echo "... common/Sphere.i"
+	@echo "... common/Sphere.s"
 	@echo "... common/controls.o"
 	@echo "... common/controls.i"
 	@echo "... common/controls.s"

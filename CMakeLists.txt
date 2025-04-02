@@ -70,7 +70,8 @@ add_executable(TP3
 		common/Node_3D.hpp
 	common/Transform.hpp
 	common/SceneManager.hpp
-
+	common/Sphere.hpp
+	common/Sphere.cpp
         TP3/vertex_shader.glsl
         TP3/fragment_shader.glsl
 )

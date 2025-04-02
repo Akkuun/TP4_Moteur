@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/TP3.dir/TP3/TP3.cpp.o"
   "CMakeFiles/TP3.dir/TP3/TP3.cpp.o.d"
+  "CMakeFiles/TP3.dir/common/Sphere.cpp.o"
+  "CMakeFiles/TP3.dir/common/Sphere.cpp.o.d"
   "CMakeFiles/TP3.dir/common/controls.cpp.o"
   "CMakeFiles/TP3.dir/common/controls.cpp.o.d"
   "CMakeFiles/TP3.dir/common/objloader.cpp.o"

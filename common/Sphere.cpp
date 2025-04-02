@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <GL/glew.h>
+#include <common/shader.hpp>
+#include <common/objloader.hpp>
+#include <common/vboindexer.hpp>
+#include <GLFW/glfw3.h>
 
 // Include GLFW
 #include <GLFW/glfw3.h>
@@ -14,6 +19,7 @@ extern GLFWwindow* window; // The "extern" keyword here is to access the variabl
 using namespace glm;
 
 #include "Sphere.hpp"
+
 
 void createPlane(std::vector<unsigned short> &indices, std::vector<glm::vec3> &indexed_vertices, std::vector<glm::vec2> &indexed_uv, int nX, int nY){
 
@@ -84,6 +90,123 @@ void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &
             int p1 = i * nX + (j+1); // en dessous du point courant
             int p2 = (i+1) * nX + j;  // à droite de p0
             int p3 = (i+1) * nX + (j+1);  // en bas à droite
+
+            indices.push_back(p0);
+            indices.push_back(p2);
+            indices.push_back(p1);
+
+            indices.push_back(p1);
+            indices.push_back(p2);
+            indices.push_back(p3);
+        }
+    }
+}
+
+void createHighDetailSphere(std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec2>& indexed_uv, GLuint& vertexbuffer, GLuint& elementbuffer, GLuint& uvs) {
+    // High detail sphere creation logic
+    int nX = 40;
+    int nY = 40;
+    float x, y, z, phi, theta;
+
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
+            theta = float(i) * 2.f * M_PI / float(nX - 1) - M_PI;
+            phi = float(j) * M_PI / (nY - 1) - M_PI / 2.f;
+            x = cos(theta) * cos(phi);
+            y = sin(theta) * cos(phi);
+            z = sin(phi);
+
+            indexed_vertices.push_back(glm::vec3(x, y, z));
+            float u = float(i) / float(nX - 1);
+            float v = float(j) / float(nY - 1);
+            indexed_uv.push_back(glm::vec2(u, v));
+        }
+    }
+
+    for (int i = 0; i < nX - 1; i++) {
+        for (int j = 0; j < nY - 1; j++) {
+            int p0 = i * nX + j;
+            int p1 = i * nX + (j + 1);
+            int p2 = (i + 1) * nX + j;
+            int p3 = (i + 1) * nX + (j + 1);
+
+            indices.push_back(p0);
+            indices.push_back(p2);
+            indices.push_back(p1);
+
+            indices.push_back(p1);
+            indices.push_back(p2);
+            indices.push_back(p3);
+        }
+    }
+}
+
+void createMediumDetailSphere(std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec2>& indexed_uv, GLuint& vertexbuffer, GLuint& elementbuffer, GLuint& uvs) {
+    // Medium detail sphere creation logic
+    int nX = 5;
+    int nY = 5;
+    float x, y, z, phi, theta;
+
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
+            theta = float(i) * 2.f * M_PI / float(nX - 1) - M_PI;
+            phi = float(j) * M_PI / (nY - 1) - M_PI / 2.f;
+            x = cos(theta) * cos(phi);
+            y = sin(theta) * cos(phi);
+            z = sin(phi);
+
+            indexed_vertices.push_back(glm::vec3(x, y, z));
+            float u = float(i) / float(nX - 1);
+            float v = float(j) / float(nY - 1);
+            indexed_uv.push_back(glm::vec2(u, v));
+        }
+    }
+
+    for (int i = 0; i < nX - 1; i++) {
+        for (int j = 0; j < nY - 1; j++) {
+            int p0 = i * nX + j;
+            int p1 = i * nX + (j + 1);
+            int p2 = (i + 1) * nX + j;
+            int p3 = (i + 1) * nX + (j + 1);
+
+            indices.push_back(p0);
+            indices.push_back(p2);
+            indices.push_back(p1);
+
+            indices.push_back(p1);
+            indices.push_back(p2);
+            indices.push_back(p3);
+        }
+    }
+}
+
+void createLowDetailSphere(std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec2>& indexed_uv, GLuint& vertexbuffer, GLuint& elementbuffer, GLuint& uvs) {
+    // Simple low detail sphere creation logic
+    int nX = 3;
+    int nY = 3;
+    float x, y, z, phi, theta;
+
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
+            theta = float(i) * 2.f * M_PI / float(nX - 1) - M_PI;
+            phi = float(j) * M_PI / (nY - 1) - M_PI / 2.f;
+            x = cos(theta) * cos(phi);
+            y = sin(theta) * cos(phi);
+            z = sin(phi);
+
+            indexed_vertices.push_back(glm::vec3(x, y, z));
+            float u = float(i) / float(nX - 1);
+            float v = float(j) / float(nY - 1);
+            indexed_uv.push_back(glm::vec2(u, v));
+        }
+    }
+
+    for (int i = 0; i < nX - 1; i++) {
+        for (int j = 0; j < nY - 1; j++) {
+            int p0 = i * nX + j;
+            int p1 = i * nX + (j + 1);
+            int p2 = (i + 1) * nX + j;
+            int p3 = (i + 1) * nX + (j + 1);
 
             indices.push_back(p0);
             indices.push_back(p2);

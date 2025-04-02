@@ -27,19 +27,53 @@ using namespace glm;
 #include <common/Node_3D.hpp>
 #include <common/Transform.hpp>
 #include <common/SceneManager.hpp>
+#include <common/Sphere.hpp>
 
+bool isAboveThreshold = false;
 
+float calculateDistance(const glm::vec3& point1, const glm::vec3& point2) {
+    return glm::length(point1 - point2);
+}
+void updateLOD(Node_3D& sun, const glm::vec3& camera_position, GLuint programID) {
+    float distance = calculateDistance(sun.getTransform().getPosition(), camera_position);
 
+    sun.indices.clear();
+    sun.indexed_vertices.clear();
+    sun.indexed_uv.clear();
 
+    if (distance < 5.0f) {
+        std::cout << "High detail LOD" << std::endl;
+        createHighDetailSphere(sun.indices, sun.indexed_vertices, sun.indexed_uv, sun.vertexbuffer, sun.elementbuffer, sun.uvs);
+    } else if (distance < 15.0f) {
+        std::cout << "Medium detail LOD" << std::endl;
+        createMediumDetailSphere(sun.indices, sun.indexed_vertices, sun.indexed_uv, sun.vertexbuffer, sun.elementbuffer, sun.uvs);
+    } else {
+        std::cout << "Low detail LOD" << std::endl;
+        createLowDetailSphere(sun.indices, sun.indexed_vertices, sun.indexed_uv, sun.vertexbuffer, sun.elementbuffer, sun.uvs);
+    }
+
+    // Rebind the VAO and update the buffer data
+    glBindVertexArray(sun.VertexArrayID);
+    glBindBuffer(GL_ARRAY_BUFFER, sun.vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, sun.indexed_vertices.size() * sizeof(glm::vec3), &sun.indexed_vertices[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sun.elementbuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sun.indices.size() * sizeof(unsigned short), &sun.indices[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, sun.uvs);
+    glBufferData(GL_ARRAY_BUFFER, sun.indexed_uv.size() * sizeof(glm::vec2), &sun.indexed_uv[0], GL_STATIC_DRAW);
+
+    sun.initBufferObject(programID); // Reinitialize the buffers with the new geometry
+}
 
 //fonction that create a sphere
 void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &indexed_vertices, std::vector<glm::vec2> &indexed_uv){
     int nX = 40;
     int nY = 40;
-    float x, y, z, phi, theta; 
+    float x, y, z, phi, theta;
 
     for(int i = 0; i < nX; i++){
-       
+
         for(int j = 0; j < nY; j++){
             theta = float(i) * 2.f * M_PI/float(nX-1) - M_PI; // angle horizontal entre -pi et pi)
             phi = float(j) * M_PI/(nY-1) - M_PI/2.f; // angle vertical (entre -pi/2 et pi/2)
@@ -51,20 +85,20 @@ void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &
             float u = float(i) / float(nX-1); // coordonnée horizontale
             float v = float(j) / float(nY-1); // coordonnée verticale
             indexed_uv.push_back(glm::vec2(u, v));
-           
+
 
         }
     }
-  
+
 
     for(int i = 0; i < nX-1 ; i++){
         for (int j = 0; j < nY-1; j++){
-            int p0 = i*nX + j; // point courant 
+            int p0 = i*nX + j; // point courant
             int p1 = i * nX + (j+1); // en dessous du point courant
             int p2 = (i+1) * nX + j;  // à droite de p0
             int p3 = (i+1) * nX + (j+1);  // en bas à droite
 
-            indices.push_back(p0); 
+            indices.push_back(p0);
             indices.push_back(p2);
             indices.push_back(p1);
 
@@ -72,7 +106,7 @@ void createSphere(std::vector<unsigned short> &indices, std::vector<glm::vec3> &
             indices.push_back(p2);
             indices.push_back(p3);
         }
-    }  
+    }
 }
 
 
@@ -133,9 +167,9 @@ float zoom = 1.;
 
 
 //MVP MATRIX
-glm::mat4 modele = glm::mat4(1.0f); 
-glm::mat4 view = glm::mat4(1.0f); 
-glm::mat4 projection = glm::mat4(1.0f); 
+glm::mat4 modele = glm::mat4(1.0f);
+glm::mat4 view = glm::mat4(1.0f);
+glm::mat4 projection = glm::mat4(1.0f);
 
 // rotations
 float orbitalSpeedMoonEarth = 0.5f;
@@ -215,11 +249,26 @@ float getTerrainHeight(glm::vec3 point, Node_3D& terrain) {
     return 0.0f; // Default height if not found
 }
 
+
 // Fonction pour mettre à jour la position de l'objet
-void updateObjectPosition(Node_3D& object, Node_3D& terrain, float offset) {
+
+
+void updateObjectPosition(Node_3D& object, Node_3D& terrain, float offset, float lowerThreshold, float upperThreshold) {
     glm::vec3 position = object.getTransform().getPosition();
     float terrainHeight = getTerrainHeight(position, terrain);
-    position.z = terrainHeight + offset;
+
+    if (isAboveThreshold) {
+        if (position.z < terrainHeight + lowerThreshold) {
+            position.z = terrainHeight + offset;
+            isAboveThreshold = false;
+        }
+    } else {
+        if (position.z < terrainHeight + upperThreshold) {
+            position.z = terrainHeight + offset;
+            isAboveThreshold = true;
+        }
+    }
+
     object.transform.setPosition(position);
 }
 
@@ -319,8 +368,11 @@ int main( void )
         timeCst += deltaTime;
         processInput(window);
 
-        // Mettre à jour la position de l'objet
-        updateObjectPosition(SUN, TERRAIN, 0.01f); // 0.5f est l'offset au-dessus du terrain
+        // Update LOD based on distance
+        updateLOD(SUN, camera_position, programID);
+
+        // Update the position of the object
+        updateObjectPosition(SUN, TERRAIN, 0.01f, 0.1f, 0.2f);
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -337,7 +389,7 @@ int main( void )
         GLuint position = glGetUniformLocation(programID, "modele");
         glUniformMatrix4fv(position, 1, GL_FALSE, glm::value_ptr(modele));
 
-        //draw the sun
+        // Draw the sun
         sceneManager.drawScene(programID);
 
         // Swap buffers

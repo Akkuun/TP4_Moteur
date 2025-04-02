@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/TP3/TP3.cpp" "CMakeFiles/TP3.dir/TP3/TP3.cpp.o" "gcc" "CMakeFiles/TP3.dir/TP3/TP3.cpp.o.d"
+  "/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/Sphere.cpp" "CMakeFiles/TP3.dir/common/Sphere.cpp.o" "gcc" "CMakeFiles/TP3.dir/common/Sphere.cpp.o.d"
   "/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/controls.cpp" "CMakeFiles/TP3.dir/common/controls.cpp.o" "gcc" "CMakeFiles/TP3.dir/common/controls.cpp.o.d"
   "/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/objloader.cpp" "CMakeFiles/TP3.dir/common/objloader.cpp.o" "gcc" "CMakeFiles/TP3.dir/common/objloader.cpp.o.d"
   "/home/mathis/Documents/M1_IMAGINE/MoteurDeJeux/3/TP3/common/shader.cpp" "CMakeFiles/TP3.dir/common/shader.cpp.o" "gcc" "CMakeFiles/TP3.dir/common/shader.cpp.o.d"
